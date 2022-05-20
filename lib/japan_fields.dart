@@ -1,7 +1,3 @@
 library japan_fields;
 
-/// A Calculator.
-class Calculator {
-  /// Returns [value] plus 1.
-  int addOne(int value) => value + 1;
-}
+export 'src/formatters/postal_code_input_formatter.dart';
