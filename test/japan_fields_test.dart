@@ -2,6 +2,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:japan_fields/src/formatters/credit_card_expiration_date_input_formatter.dart';
 import 'package:japan_fields/src/formatters/credit_card_input_formatter.dart';
+import 'package:japan_fields/src/formatters/date_input_formatter.dart';
 import 'package:japan_fields/src/formatters/phone_input_formatter.dart';
 import 'package:japan_fields/src/formatters/postal_code_input_formatter.dart';
 
@@ -324,8 +325,7 @@ void main() {
       );
     });
 
-    test(
-        'when input is until 10 numbers should return XXX-XXXX-XXX format',
+    test('when input is until 10 numbers should return XXX-XXXX-XXX format',
         () {
       testNewValue = const TextEditingValue(text: '0909999888');
       expect(
@@ -337,9 +337,7 @@ void main() {
       );
     });
 
-    test(
-        'when input until 11 numbers should return XXX-XXXX-XXXX format',
-        () {
+    test('when input until 11 numbers should return XXX-XXXX-XXXX format', () {
       testNewValue = const TextEditingValue(text: '09099998888');
       expect(
         formatter.formatEditUpdate(testOldValue, testNewValue),
@@ -350,9 +348,7 @@ void main() {
       );
     });
 
-    test(
-        'when input is over 11 numbers should return old value',
-        () {
+    test('when input is over 11 numbers should return old value', () {
       testNewValue = const TextEditingValue(text: '090999988889');
       expect(
         formatter.formatEditUpdate(testOldValue, testNewValue),
@@ -360,10 +356,8 @@ void main() {
       );
     });
 
-    test(
-        'when input is empty should return empty',
-        () {
-          testNewValue = const TextEditingValue(text: '');
+    test('when input is empty should return empty', () {
+      testNewValue = const TextEditingValue(text: '');
       expect(
         formatter.formatEditUpdate(testOldValue, testNewValue),
         TextEditingValue.empty,
@@ -371,5 +365,109 @@ void main() {
     });
   });
 
+  group('test date input formatter', () {
+    group('using default separator', () {
+      setUp(() => formatter = DateInputFormatter(useJapaneseSeparator: false));
 
+      test('when input 4 numbers should retrun XXXX/ format', () {
+        testNewValue = const TextEditingValue(text: '1500');
+        expect(
+          formatter.formatEditUpdate(testOldValue, testNewValue),
+          const TextEditingValue(
+            text: '1500/',
+            selection: TextSelection.collapsed(offset: 5),
+          ),
+        );
+      });
+
+      test('when input 6 numbers should retrun XXXX/XX/ format', () {
+        testNewValue = const TextEditingValue(text: '150001');
+        expect(
+          formatter.formatEditUpdate(testOldValue, testNewValue),
+          const TextEditingValue(
+            text: '1500/01/',
+            selection: TextSelection.collapsed(offset: 8),
+          ),
+        );
+      });
+
+      test('when input 8 numbers should retrun XXXX/XX/XX format', () {
+        testNewValue = const TextEditingValue(text: '15000101');
+        expect(
+          formatter.formatEditUpdate(testOldValue, testNewValue),
+          const TextEditingValue(
+            text: '1500/01/01',
+            selection: TextSelection.collapsed(offset: 10),
+          ),
+        );
+      });
+    });
+
+    group('using japanese separator', () {
+      setUp(() => formatter = DateInputFormatter(useJapaneseSeparator: true));
+
+      test('when input 4 numbers should retrun XXXX年 format', () {
+        testNewValue = const TextEditingValue(text: '1500');
+        expect(
+          formatter.formatEditUpdate(testOldValue, testNewValue),
+          const TextEditingValue(
+            text: '1500年',
+            selection: TextSelection.collapsed(offset: 5),
+          ),
+        );
+      });
+
+      test('when input 6 numbers should retrun XXXX年XX月 format', () {
+        testNewValue = const TextEditingValue(text: '150001');
+        expect(
+          formatter.formatEditUpdate(testOldValue, testNewValue),
+          const TextEditingValue(
+            text: '1500年01月',
+            selection: TextSelection.collapsed(offset: 8),
+          ),
+        );
+      });
+
+      test('when input 8 numbers should retrun XXXX年XX月XX日 format', () {
+        testNewValue = const TextEditingValue(text: '15000101');
+        expect(
+          formatter.formatEditUpdate(testOldValue, testNewValue),
+          const TextEditingValue(
+            text: '1500年01月01日',
+            selection: TextSelection.collapsed(offset: 11),
+          ),
+        );
+      });
+    });
+
+    test('when input is empty should return empty', () {
+      formatter = DateInputFormatter();
+      testNewValue = TextEditingValue.empty;
+      expect(
+        formatter.formatEditUpdate(testOldValue, testNewValue),
+        TextEditingValue.empty,
+      );
+    });
+
+    test('when input is less than 4 numbers return withou format', () {
+      formatter = DateInputFormatter();
+      testNewValue = const TextEditingValue(text: '800');
+      expect(
+        formatter.formatEditUpdate(testOldValue, testNewValue),
+        const TextEditingValue(
+          text: '800',
+          selection: TextSelection.collapsed(offset: 3),
+        ),
+      );
+    });
+
+    test('when input is over 8 numbers should return old value', () {
+      formatter = DateInputFormatter();
+      testNewValue = const TextEditingValue(text: '190001012');
+      expect(
+        formatter.formatEditUpdate(testOldValue, testNewValue),
+        testOldValue,
+      );
+    });
+  });
 }
