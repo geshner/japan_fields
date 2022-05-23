@@ -5,6 +5,7 @@ import 'package:japan_fields/src/formatters/credit_card_input_formatter.dart';
 import 'package:japan_fields/src/formatters/date_input_formatter.dart';
 import 'package:japan_fields/src/formatters/phone_input_formatter.dart';
 import 'package:japan_fields/src/formatters/postal_code_input_formatter.dart';
+import 'package:japan_fields/src/formatters/time_input_formatter.dart';
 
 void main() {
   TextEditingValue testOldValue = TextEditingValue.empty;
@@ -469,5 +470,158 @@ void main() {
         testOldValue,
       );
     });
+  });
+
+  group('test time input formatter', () {
+    setUp(() => formatter = TimeInputFormatter());
+
+    test('when input is empty, should return empty', () {
+      testNewValue = TextEditingValue.empty;
+      expect(
+        formatter.formatEditUpdate(testOldValue, testNewValue),
+        TextEditingValue.empty,
+      );
+    });
+
+    test('when input is over 4 numbers, should return old value', () {
+      testNewValue = const TextEditingValue(text: '123456');
+      expect(
+        formatter.formatEditUpdate(testOldValue, testNewValue),
+        testOldValue,
+      );
+    });
+
+    test('when input is 1 number, should return with no mask', () {
+      testNewValue = const TextEditingValue(text: '1');
+      expect(
+        formatter.formatEditUpdate(testOldValue, testNewValue),
+        const TextEditingValue(
+          text: '1',
+          selection: TextSelection.collapsed(offset: 1),
+        ),
+      );
+    });
+
+    test('when first number is 3 or higher, should return old value', () {
+      testNewValue = const TextEditingValue(text: '3');
+      expect(
+        formatter.formatEditUpdate(testOldValue, testNewValue),
+        testOldValue,
+      );
+
+      testNewValue = const TextEditingValue(text: '5');
+      expect(
+        formatter.formatEditUpdate(testOldValue, testNewValue),
+        testOldValue,
+      );
+    });
+
+    test('when first two number is 23 or lower, should return with no mask',
+        () {
+      testNewValue = const TextEditingValue(text: '23');
+      expect(
+        formatter.formatEditUpdate(testOldValue, testNewValue),
+        const TextEditingValue(
+          text: '23',
+          selection: TextSelection.collapsed(offset: 2),
+        ),
+      );
+
+      testNewValue = const TextEditingValue(text: '00');
+      expect(
+        formatter.formatEditUpdate(testOldValue, testNewValue),
+        const TextEditingValue(
+          text: '00',
+          selection: TextSelection.collapsed(offset: 2),
+        ),
+      );
+    });
+
+    test('when first two number is 24 or higher, should return old value',
+            () {
+          testNewValue = const TextEditingValue(text: '24');
+          expect(
+            formatter.formatEditUpdate(testOldValue, testNewValue),
+            testOldValue,
+          );
+
+          testNewValue = const TextEditingValue(text: '99');
+          expect(
+            formatter.formatEditUpdate(testOldValue, testNewValue),
+            testOldValue,
+          );
+        });
+
+    test('when third number is 5 or lower, should return with hh:m mask',
+            () {
+          testNewValue = const TextEditingValue(text: '235');
+          expect(
+            formatter.formatEditUpdate(testOldValue, testNewValue),
+            const TextEditingValue(
+              text: '23:5',
+              selection: TextSelection.collapsed(offset: 4),
+            ),
+          );
+
+          testNewValue = const TextEditingValue(text: '000');
+          expect(
+            formatter.formatEditUpdate(testOldValue, testNewValue),
+            const TextEditingValue(
+              text: '00:0',
+              selection: TextSelection.collapsed(offset: 4),
+            ),
+          );
+        });
+
+    test('when third number is 6 or higher, should return old value',
+            () {
+          testNewValue = const TextEditingValue(text: '226');
+          expect(
+            formatter.formatEditUpdate(testOldValue, testNewValue),
+            testOldValue,
+          );
+
+          testNewValue = const TextEditingValue(text: '139');
+          expect(
+            formatter.formatEditUpdate(testOldValue, testNewValue),
+            testOldValue,
+          );
+        });
+
+    test('when last two number is 59 or lower, should return with hh:mm mask',
+            () {
+          testNewValue = const TextEditingValue(text: '2359');
+          expect(
+            formatter.formatEditUpdate(testOldValue, testNewValue),
+            const TextEditingValue(
+              text: '23:59',
+              selection: TextSelection.collapsed(offset: 5),
+            ),
+          );
+
+          testNewValue = const TextEditingValue(text: '0000');
+          expect(
+            formatter.formatEditUpdate(testOldValue, testNewValue),
+            const TextEditingValue(
+              text: '00:00',
+              selection: TextSelection.collapsed(offset: 5),
+            ),
+          );
+        });
+
+    test('when last two number is 60 or higher, should return old value',
+            () {
+          testNewValue = const TextEditingValue(text: '1360');
+          expect(
+            formatter.formatEditUpdate(testOldValue, testNewValue),
+            testOldValue,
+          );
+
+          testNewValue = const TextEditingValue(text: '1299');
+          expect(
+            formatter.formatEditUpdate(testOldValue, testNewValue),
+            testOldValue,
+          );
+        });
   });
 }
