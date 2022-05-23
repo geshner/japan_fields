@@ -1,11 +1,6 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:japan_fields/src/formatters/credit_card_expiration_date_input_formatter.dart';
-import 'package:japan_fields/src/formatters/credit_card_input_formatter.dart';
-import 'package:japan_fields/src/formatters/date_input_formatter.dart';
-import 'package:japan_fields/src/formatters/phone_input_formatter.dart';
-import 'package:japan_fields/src/formatters/postal_code_input_formatter.dart';
-import 'package:japan_fields/src/formatters/time_input_formatter.dart';
+import 'package:japan_fields/japan_fields.dart';
 
 void main() {
   TextEditingValue testOldValue = TextEditingValue.empty;
@@ -370,7 +365,7 @@ void main() {
     group('using default separator', () {
       setUp(() => formatter = DateInputFormatter(useJapaneseSeparator: false));
 
-      test('when input 4 numbers should retrun XXXX/ format', () {
+      test('when input 4 numbers should return XXXX/ format', () {
         testNewValue = const TextEditingValue(text: '1500');
         expect(
           formatter.formatEditUpdate(testOldValue, testNewValue),
@@ -381,7 +376,7 @@ void main() {
         );
       });
 
-      test('when input 6 numbers should retrun XXXX/XX/ format', () {
+      test('when input 6 numbers should return XXXX/XX/ format', () {
         testNewValue = const TextEditingValue(text: '150001');
         expect(
           formatter.formatEditUpdate(testOldValue, testNewValue),
@@ -392,7 +387,7 @@ void main() {
         );
       });
 
-      test('when input 8 numbers should retrun XXXX/XX/XX format', () {
+      test('when input 8 numbers should return XXXX/XX/XX format', () {
         testNewValue = const TextEditingValue(text: '15000101');
         expect(
           formatter.formatEditUpdate(testOldValue, testNewValue),
@@ -407,7 +402,7 @@ void main() {
     group('using japanese separator', () {
       setUp(() => formatter = DateInputFormatter(useJapaneseSeparator: true));
 
-      test('when input 4 numbers should retrun XXXX年 format', () {
+      test('when input 4 numbers should return XXXX年 format', () {
         testNewValue = const TextEditingValue(text: '1500');
         expect(
           formatter.formatEditUpdate(testOldValue, testNewValue),
@@ -418,7 +413,7 @@ void main() {
         );
       });
 
-      test('when input 6 numbers should retrun XXXX年XX月 format', () {
+      test('when input 6 numbers should return XXXX年XX月 format', () {
         testNewValue = const TextEditingValue(text: '150001');
         expect(
           formatter.formatEditUpdate(testOldValue, testNewValue),
@@ -429,7 +424,7 @@ void main() {
         );
       });
 
-      test('when input 8 numbers should retrun XXXX年XX月XX日 format', () {
+      test('when input 8 numbers should return XXXX年XX月XX日 format', () {
         testNewValue = const TextEditingValue(text: '15000101');
         expect(
           formatter.formatEditUpdate(testOldValue, testNewValue),
@@ -450,7 +445,7 @@ void main() {
       );
     });
 
-    test('when input is less than 4 numbers return withou format', () {
+    test('when input is less than 4 numbers return without format', () {
       formatter = DateInputFormatter();
       testNewValue = const TextEditingValue(text: '800');
       expect(
