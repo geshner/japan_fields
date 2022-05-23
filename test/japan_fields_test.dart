@@ -1,8 +1,8 @@
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:japan_fields/src/formatters/credit_card_expiration_date_input_formatter.dart';
 import 'package:japan_fields/src/formatters/credit_card_input_formatter.dart';
+import 'package:japan_fields/src/formatters/phone_input_formatter.dart';
 import 'package:japan_fields/src/formatters/postal_code_input_formatter.dart';
 
 void main() {
@@ -234,7 +234,7 @@ void main() {
       );
     });
 
-    test('when input between 9 and 11 numbers should displpay with mask', () {
+    test('when input between 9 and 11 numbers should display with mask', () {
       testNewValue = const TextEditingValue(text: '11112222333');
       expect(
         formatter.formatEditUpdate(testOldValue, testNewValue),
@@ -245,7 +245,7 @@ void main() {
       );
     });
 
-    test('when input between 11 and 16 numbers should displpay with mask', () {
+    test('when input between 11 and 16 numbers should display with mask', () {
       testNewValue = const TextEditingValue(text: '1111222233334444');
       expect(
         formatter.formatEditUpdate(testOldValue, testNewValue),
@@ -298,4 +298,78 @@ void main() {
       );
     });
   });
+
+  group('test phone input formatter', () {
+    setUp(() => formatter = PhoneInputFormatter());
+
+    test('when input less than 3 numbers should return as is', () {
+      testNewValue = const TextEditingValue(text: '09');
+      expect(
+        formatter.formatEditUpdate(testOldValue, testNewValue),
+        const TextEditingValue(
+          text: '09',
+          selection: TextSelection.collapsed(offset: 2),
+        ),
+      );
+    });
+
+    test('when input is until 6 numbers should return XXX-XXX format', () {
+      testNewValue = const TextEditingValue(text: '090999');
+      expect(
+        formatter.formatEditUpdate(testOldValue, testNewValue),
+        const TextEditingValue(
+          text: '090-999',
+          selection: TextSelection.collapsed(offset: 7),
+        ),
+      );
+    });
+
+    test(
+        'when input is until 10 numbers should return XXX-XXXX-XXX format',
+        () {
+      testNewValue = const TextEditingValue(text: '0909999888');
+      expect(
+        formatter.formatEditUpdate(testOldValue, testNewValue),
+        const TextEditingValue(
+          text: '090-9999-888',
+          selection: TextSelection.collapsed(offset: 12),
+        ),
+      );
+    });
+
+    test(
+        'when input until 11 numbers should return XXX-XXXX-XXXX format',
+        () {
+      testNewValue = const TextEditingValue(text: '09099998888');
+      expect(
+        formatter.formatEditUpdate(testOldValue, testNewValue),
+        const TextEditingValue(
+          text: '090-9999-8888',
+          selection: TextSelection.collapsed(offset: 13),
+        ),
+      );
+    });
+
+    test(
+        'when input is over 11 numbers should return old value',
+        () {
+      testNewValue = const TextEditingValue(text: '090999988889');
+      expect(
+        formatter.formatEditUpdate(testOldValue, testNewValue),
+        testOldValue,
+      );
+    });
+
+    test(
+        'when input is empty should return empty',
+        () {
+          testNewValue = const TextEditingValue(text: '');
+      expect(
+        formatter.formatEditUpdate(testOldValue, testNewValue),
+        TextEditingValue.empty,
+      );
+    });
+  });
+
+
 }
