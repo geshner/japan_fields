@@ -532,91 +532,161 @@ void main() {
       );
     });
 
-    test('when first two number is 24 or higher, should return old value',
-            () {
-          testNewValue = const TextEditingValue(text: '24');
-          expect(
-            formatter.formatEditUpdate(testOldValue, testNewValue),
-            testOldValue,
-          );
+    test('when first two number is 24 or higher, should return old value', () {
+      testNewValue = const TextEditingValue(text: '24');
+      expect(
+        formatter.formatEditUpdate(testOldValue, testNewValue),
+        testOldValue,
+      );
 
-          testNewValue = const TextEditingValue(text: '99');
-          expect(
-            formatter.formatEditUpdate(testOldValue, testNewValue),
-            testOldValue,
-          );
-        });
+      testNewValue = const TextEditingValue(text: '99');
+      expect(
+        formatter.formatEditUpdate(testOldValue, testNewValue),
+        testOldValue,
+      );
+    });
 
-    test('when third number is 5 or lower, should return with hh:m mask',
-            () {
-          testNewValue = const TextEditingValue(text: '235');
-          expect(
-            formatter.formatEditUpdate(testOldValue, testNewValue),
-            const TextEditingValue(
-              text: '23:5',
-              selection: TextSelection.collapsed(offset: 4),
-            ),
-          );
+    test('when third number is 5 or lower, should return with hh:m mask', () {
+      testNewValue = const TextEditingValue(text: '235');
+      expect(
+        formatter.formatEditUpdate(testOldValue, testNewValue),
+        const TextEditingValue(
+          text: '23:5',
+          selection: TextSelection.collapsed(offset: 4),
+        ),
+      );
 
-          testNewValue = const TextEditingValue(text: '000');
-          expect(
-            formatter.formatEditUpdate(testOldValue, testNewValue),
-            const TextEditingValue(
-              text: '00:0',
-              selection: TextSelection.collapsed(offset: 4),
-            ),
-          );
-        });
+      testNewValue = const TextEditingValue(text: '000');
+      expect(
+        formatter.formatEditUpdate(testOldValue, testNewValue),
+        const TextEditingValue(
+          text: '00:0',
+          selection: TextSelection.collapsed(offset: 4),
+        ),
+      );
+    });
 
-    test('when third number is 6 or higher, should return old value',
-            () {
-          testNewValue = const TextEditingValue(text: '226');
-          expect(
-            formatter.formatEditUpdate(testOldValue, testNewValue),
-            testOldValue,
-          );
+    test('when third number is 6 or higher, should return old value', () {
+      testNewValue = const TextEditingValue(text: '226');
+      expect(
+        formatter.formatEditUpdate(testOldValue, testNewValue),
+        testOldValue,
+      );
 
-          testNewValue = const TextEditingValue(text: '139');
-          expect(
-            formatter.formatEditUpdate(testOldValue, testNewValue),
-            testOldValue,
-          );
-        });
+      testNewValue = const TextEditingValue(text: '139');
+      expect(
+        formatter.formatEditUpdate(testOldValue, testNewValue),
+        testOldValue,
+      );
+    });
 
     test('when last two number is 59 or lower, should return with hh:mm mask',
-            () {
-          testNewValue = const TextEditingValue(text: '2359');
-          expect(
-            formatter.formatEditUpdate(testOldValue, testNewValue),
-            const TextEditingValue(
-              text: '23:59',
-              selection: TextSelection.collapsed(offset: 5),
-            ),
-          );
+        () {
+      testNewValue = const TextEditingValue(text: '2359');
+      expect(
+        formatter.formatEditUpdate(testOldValue, testNewValue),
+        const TextEditingValue(
+          text: '23:59',
+          selection: TextSelection.collapsed(offset: 5),
+        ),
+      );
 
-          testNewValue = const TextEditingValue(text: '0000');
-          expect(
-            formatter.formatEditUpdate(testOldValue, testNewValue),
-            const TextEditingValue(
-              text: '00:00',
-              selection: TextSelection.collapsed(offset: 5),
-            ),
-          );
-        });
+      testNewValue = const TextEditingValue(text: '0000');
+      expect(
+        formatter.formatEditUpdate(testOldValue, testNewValue),
+        const TextEditingValue(
+          text: '00:00',
+          selection: TextSelection.collapsed(offset: 5),
+        ),
+      );
+    });
 
-    test('when last two number is 60 or higher, should return old value',
-            () {
-          testNewValue = const TextEditingValue(text: '1360');
-          expect(
-            formatter.formatEditUpdate(testOldValue, testNewValue),
-            testOldValue,
-          );
+    test('when last two number is 60 or higher, should return old value', () {
+      testNewValue = const TextEditingValue(text: '1360');
+      expect(
+        formatter.formatEditUpdate(testOldValue, testNewValue),
+        testOldValue,
+      );
 
-          testNewValue = const TextEditingValue(text: '1299');
-          expect(
-            formatter.formatEditUpdate(testOldValue, testNewValue),
-            testOldValue,
-          );
-        });
+      testNewValue = const TextEditingValue(text: '1299');
+      expect(
+        formatter.formatEditUpdate(testOldValue, testNewValue),
+        testOldValue,
+      );
+    });
+  });
+
+  group('test yen input formatter', () {
+    test('when input is empty, should return empty', () {
+      formatter = YenInputFormatter();
+      testNewValue = TextEditingValue.empty;
+      expect(
+        formatter.formatEditUpdate(testOldValue, testNewValue),
+        TextEditingValue.empty,
+      );
+    });
+
+    test(
+        'when input is greater than default max length, should return old value',
+        () {
+      formatter = YenInputFormatter();
+      testNewValue = const TextEditingValue(text: '9999999999999');
+      expect(
+        formatter.formatEditUpdate(testOldValue, testNewValue),
+        testOldValue,
+      );
+    });
+
+    group('with yen marks is disabled', () {
+      setUp(() => formatter = YenInputFormatter());
+
+      test('when input is less than 4 numbers should return with no mask', () {
+        testNewValue = const TextEditingValue(text: '100');
+        expect(
+          formatter.formatEditUpdate(testOldValue, testNewValue),
+          const TextEditingValue(
+            text: '100',
+            selection: TextSelection.collapsed(offset: 3),
+          ),
+        );
+      });
+
+      test('when input is between 4 and maxLength numbers should return with mask', () {
+        testNewValue = const TextEditingValue(text: '100000000000');
+        expect(
+          formatter.formatEditUpdate(testOldValue, testNewValue),
+          const TextEditingValue(
+            text: '100,000,000,000',
+            selection: TextSelection.collapsed(offset: 15),
+          ),
+        );
+      });
+    });
+
+    group('with yen mark enabled', () {
+      setUp(() => formatter = YenInputFormatter(enableYenMark: true));
+
+      test('when input is less than 4 numbers should return with no mask', () {
+        testNewValue = const TextEditingValue(text: '100');
+        expect(
+          formatter.formatEditUpdate(testOldValue, testNewValue),
+          const TextEditingValue(
+            text: '￥100',
+            selection: TextSelection.collapsed(offset: 4),
+          ),
+        );
+      });
+
+      test('when input is between 4 and maxLength numbers should return with mask', () {
+        testNewValue = const TextEditingValue(text: '100000000000');
+        expect(
+          formatter.formatEditUpdate(testOldValue, testNewValue),
+          const TextEditingValue(
+            text: '￥100,000,000,000',
+            selection: TextSelection.collapsed(offset: 16),
+          ),
+        );
+      });
+    });
   });
 }
