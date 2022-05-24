@@ -1,6 +1,6 @@
 name: japan_fields
 description: A simple way to use japanese data formats and patterns on your application
-version: 0.0.1
+version: 0.1.0
 homepage: https://github.com/geshner/japan_fields
 
 environment:
